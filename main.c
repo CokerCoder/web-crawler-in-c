@@ -34,7 +34,9 @@ int main(int argc , char *argv[])
 	connect(web_socket , (struct sockaddr *)&server , sizeof(server));
 	
 	//Send some data
-	char request[] = "GET / HTTP/1.1\r\n\r\n";
+	char request[1024];
+	sprintf(request, "GET / HTTP/1.1\nHost: %s:80\nUser-Agent: jinyj\r\n\r\n", hostname);
+
 	char response[4096];
 
 	send(web_socket , request , strlen(request) , 0);
