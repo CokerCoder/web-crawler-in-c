@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall
-DEPS = getip.h
-OBJ = main.o getip.o
+DEPS = 
+OBJ = main.o 
 
 %.o: %.c $(DEPS)
 		$(CC) $(CFLAGS) -c -o $@ $<
