@@ -1,0 +1,3 @@
+/mnt/c/code/COMP30023/comp30023-2020-project-1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/mnt/c/code/COMP30023/comp30023-2020-project-1/cmake-build-debug/CMakeFiles/crawler.dir
+/mnt/c/code/COMP30023/comp30023-2020-project-1/cmake-build-debug/CMakeFiles/edit_cache.dir
