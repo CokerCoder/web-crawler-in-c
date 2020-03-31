@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "../lib/gumbo/gumbo.h"
+#include "url.h"
 
 
 static void search_for_links(GumboNode* node) {
@@ -29,14 +30,28 @@ static void search_for_links(GumboNode* node) {
     }
 }
 
+
 int main(int argc , char *argv[])
 {
+    if (argc < 2)
+    {
+        fprintf(stderr, "usage %s hostname\n", argv[0]);
+        exit(0);
+    }
 
-    char *contents = "<h1>Hello, World!</h1><a href=\"unimelb.edu.au\">test</a><a href=\"http://www.google.com/\">test</a>";
+    char* starting_url = argv[1];
+
+    // List of urls that have been visited, 100 maximum
+    char* parsed_url[100] = {};
+
+    char* contents = "<h1>Hello, World!</h1><a href=\"unimelb.edu.au\">test</a><a href=\"http://www.google.com/\">test</a>";
 
     GumboOutput* op = gumbo_parse(contents);
     search_for_links(op->root);
     gumbo_destroy_output(&kGumboDefaultOptions, op);
+
+    parse_url(starting_url);
+
 
 	return 0;
 }
