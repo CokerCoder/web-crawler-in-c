@@ -14,6 +14,7 @@ int main(int argc , char *argv[])
     }
 
     char* starting_url = argv[1];
+    check_ending(starting_url);
 
     // List of urls that have been visited, 100 maximum
     char* parsed_url[100] = {};

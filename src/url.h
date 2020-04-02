@@ -14,9 +14,8 @@ void check_ending(char* url);
 
 int valid_url(char* url);
 
-int parse_url(char url[]);
+int check_url(char url[]);
 
-char* get_host(char* url);
 
 struct Url get_info(char* url);
 

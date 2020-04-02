@@ -9,11 +9,11 @@ void to_absolute(char* url) {
 
 }
 
-// Strip the tailing '/' for all urls
+
 void check_ending(char* url) {
     unsigned long url_length = strlen(url);
-    if (url[url_length-1] == '/') {
-        url[url_length-1] = 0;
+    if (url[url_length-1] != '/') {
+        strcat(url, "/");
     }
 }
 
@@ -47,7 +47,7 @@ struct Url get_info(char* url) {
     return info;
 }
 
-int parse_url(char url[]) {
+int check_url(char url[]) {
 
     int outcome = valid_url(url);
     if (outcome == 1) {
@@ -56,15 +56,6 @@ int parse_url(char url[]) {
     }
 
     check_ending(url);
-
-    char* text = "http://www.google.com/index/index.html";
-    char host[100];
-    char page[100];
-    sscanf(text, "http://%99[^/]%s[\n]", host, page);
-    printf("host = \"%s\"\n", host);
-    printf("page = \"%s\"\n", page);
-
-    printf("%s\n", url);
 
     return 0;
 }
