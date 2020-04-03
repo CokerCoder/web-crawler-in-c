@@ -6,8 +6,8 @@
 #define UNTITLED_URL_H
 
 struct Url {
-    char host[100];
-    char path[100];
+    char host[500];
+    char path[500];
 };
 
 void check_ending(char* url);
@@ -18,6 +18,10 @@ int check_url(char url[]);
 
 
 struct Url get_info(char* url);
+
+void to_abs(char* relative, char* host, char* path);
+
+int check_visited(char* abs_url, char** total_list, int total);
 
 
 #endif //UNTITLED_URL_H

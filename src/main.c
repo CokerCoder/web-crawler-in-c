@@ -17,14 +17,19 @@ int main(int argc , char *argv[])
     check_ending(starting_url);
 
     // List of urls that have been visited, 100 maximum
-    char* parsed_url[100] = {};
+    char **visited;
+    visited = malloc(100 * sizeof *visited);
+    for (int i = 0; i < 100; i++) {
+        visited[i] = malloc(1000 * sizeof *visited[i]);
+    }
+    int total = 0;
 
+    // Get the info of starting url
     struct Url info = get_info(starting_url);
 
     printf("host: %s and path: %s\n", info.host, info.path);
 
-    parse_page(info.host, info.path);
-
+    parse_page(info.host, info.path, visited, &total);
 
 	return 0;
 }
