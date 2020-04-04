@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include "../lib/gumbo/gumbo.h"
 
-#include "parse.h"
 #include "url.h"
 
 #include <malloc.h>
