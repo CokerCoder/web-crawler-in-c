@@ -23,5 +23,7 @@ void to_abs(char* relative, char* host, char* path);
 
 int check_visited(char* abs_url, char** total_list, int total);
 
+int check_components(char* url, char* host);
+
 
 #endif //UNTITLED_URL_H

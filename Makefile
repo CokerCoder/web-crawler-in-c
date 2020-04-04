@@ -7,4 +7,4 @@ all:
 
 clean:
 	-rm -rf build/
-	-rm ./crawler
+	-rm -f ./crawler

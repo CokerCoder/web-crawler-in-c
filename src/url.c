@@ -107,3 +107,26 @@ int check_visited(char* abs_url, char** total_list, int total) {
     }
     return 0;
 }
+
+// Function to check the components of the url
+// return 0 if not valid
+int check_components(char* url, char* host) {
+
+    struct Url info;
+    char check_first[50];
+    char check_second[50];
+    char expected_first[50];
+    char expected_second[50];
+
+    sscanf(url, "http://%99[^/]%s[\n]", info.host, info.path);
+
+    sscanf(host, "%99[^.].%s", check_first, check_second);
+    sscanf(info.host, "%99[^.].%s", expected_first, expected_second);
+
+
+    if (strcmp(check_second, expected_second) == 0) {
+        return 0;
+    }
+
+    return 1;
+}

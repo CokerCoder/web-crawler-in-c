@@ -140,8 +140,8 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         if (check_url(urls[i]) == 0) {
             // Turn to absolute url
             to_abs(urls[i], host, path);
-            // Check if visited before
-            if (check_visited(urls[i], visited, *total) == 0) {
+            // Check if visited before and the host components
+            if (check_visited(urls[i], visited, *total) == 0 && check_components(urls[i], host) == 0) {
                 // If all good, go to the url
 
 //                printf("next visit: %s\n", urls[i]);
