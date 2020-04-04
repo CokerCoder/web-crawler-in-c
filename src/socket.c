@@ -88,7 +88,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     int ptr = 0;
 
 
-    while ((read = recv(web_socket, &response[ptr], sizeof response - read, 0))) {
+    while ((read = recv(web_socket, &response[ptr], sizeof response, 0))) {
         ptr += read;
         if (ptr >= MAX_BUFFER) {
             break;
@@ -110,7 +110,6 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     // Free thr response memory right away
     search_for_links(op->root, urls, &count);
     gumbo_destroy_output(&kGumboDefaultOptions, op);
-
 
 
     // Strip the tailing '/' again and save to list before output
