@@ -9,7 +9,7 @@
 #include "../lib/gumbo/gumbo.h"
 
 
-void recv_timeout(int s , int timeout, char response[]);
+void recv_timeout(int s , int timeout, char* response);
 
 
 #endif //UNTITLED_PARSE_H
