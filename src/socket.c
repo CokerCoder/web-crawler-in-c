@@ -25,10 +25,8 @@ static void search_for_links(GumboNode* node, char** list, int* count) {
     if (node->v.element.tag == GUMBO_TAG_A &&
         (href = gumbo_get_attribute(&node->v.element.attributes, "href"))) {
 
-
         // Append the url to the list and increase the size by 1
-        strncpy(list[*count], href->value, strlen(href->value));
-
+        strcpy(list[*count], href->value);
         *count = *count + 1;
     }
 
@@ -88,7 +86,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 
     char response[MAX_BUFFER];
 
-    recv_timeout(web_socket, 1, response);
+    recv_timeout(web_socket, 0, response);
 
     close(web_socket);
 
@@ -146,10 +144,10 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 
 
 
-//    for (int j=0; j<100; j++)
-//    {
-//        free(urls[j]);
-//    }
-//    free(urls);
+    for (int j=0; j<100; j++)
+    {
+        free(urls[j]);
+    }
+    free(urls);
 
 }
