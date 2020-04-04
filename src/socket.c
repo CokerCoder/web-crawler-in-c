@@ -23,7 +23,6 @@ static void search_for_links(GumboNode* node, char** list, int* count) {
     GumboAttribute* href;
     if (node->v.element.tag == GUMBO_TAG_A &&
         (href = gumbo_get_attribute(&node->v.element.attributes, "href"))) {
-
         // Append the url to the list and increase the size by 1
         strcpy(list[*count], href->value);
         *count = *count + 1;
@@ -75,24 +74,26 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         exit(0);
     }
 
-
+    char request[2048];
     //Send some data
-    char request[1024];
 
-    sprintf(request, "GET %s HTTP/1.1\nHost: %s\nUser-Agent: jinyj\nConnection: close\r\n\r\n", path, host);
+    sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\nUser-Agent: jinyj\r\nConnection: close\r\n\r\n", path, host);
 
     send(web_socket, request, strlen(request), 0);
 //
     char response[MAX_BUFFER];
+//    printf("request: %s\n", request);
     int read = 0;
+    int ptr = 0;
 
-
-    while (1) {
-        read = recv(web_socket, response, MAX_BUFFER, 0);
-        if (read <= 0) {
+    while ((read = recv(web_socket, &response[ptr], sizeof response - read, 0))) {
+        ptr += read;
+        if (ptr >= MAX_BUFFER) {
             break;
         }
     }
+
+//    printf("response: %s\n", response);
 
     close(web_socket);
 

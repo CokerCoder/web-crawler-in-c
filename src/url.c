@@ -57,7 +57,6 @@ int check_url(char url[]) {
 
     int outcome = valid_url(url);
     if (outcome == 1) {
-        printf("Invalid url\n");
         return 1;
     }
     check_ending(url);
