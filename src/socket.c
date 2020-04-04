@@ -85,12 +85,11 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 //
     char response[MAX_BUFFER];
     int read = 0;
-    int ptr = 0;
 
 
-    while ((read = recv(web_socket, &response[ptr], sizeof response, 0))) {
-        ptr += read;
-        if (ptr >= MAX_BUFFER) {
+    while (1) {
+        read = recv(web_socket, response, MAX_BUFFER, 0);
+        if (read <= 0) {
             break;
         }
     }
