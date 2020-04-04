@@ -82,21 +82,27 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 
     sprintf(request, "GET %s HTTP/1.1\nHost: %s\nUser-Agent: jinyj\nConnection: close\r\n\r\n", path, host);
 
+//    send(web_socket, request, strlen(request), 0);
+//
+//    char response[MAX_BUFFER];
+//    int read = 0;
+//    int ptr = 0;
+//
+//
+//    while ((read = recv(web_socket, &response[ptr], sizeof response - read, 0))) {
+//        ptr += read;
+//        if (ptr >= MAX_BUFFER) {
+//            break;
+//        }
+//    }
+//
+////    recv_timeout(web_socket, 0, response);
+    char *response;
+    response = (char *) malloc(100000 * sizeof(char));
+
     send(web_socket, request, strlen(request), 0);
+    recv(web_socket, response, 100000, 0);
 
-    char response[MAX_BUFFER];
-    int read = 0;
-    int ptr = 0;
-
-
-    while ((read = recv(web_socket, &response[ptr], sizeof response - read, 0))) {
-        ptr += read;
-        if (ptr >= MAX_BUFFER) {
-            break;
-        }
-    }
-
-//    recv_timeout(web_socket, 0, response);
 
     close(web_socket);
 
