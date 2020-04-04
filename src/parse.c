@@ -45,7 +45,7 @@ void recv_timeout(int s , int timeout, char* response)
             break;
         }
 
-        memset(chunk , 0 , MAX_BUFFER);	//clear the variable
+        // memset(chunk , 0 , MAX_BUFFER);	//clear the variable
         if((size_recv =  recv(s , &chunk[total_size] , sizeof chunk - size_recv , 0) ) < 0)
         {
             //if nothing was received then we want to wait a little before trying again, 0.1 seconds
@@ -61,14 +61,14 @@ void recv_timeout(int s , int timeout, char* response)
 
     }
 
-    int read = 0;
-    int ptr = 0;
-    while ((read = recv(s, &response[ptr], sizeof response - read, 0))) {
-        ptr += read;
-        if (ptr >= MAX_BUFFER) {
-            break;
-        }
-    }
+//    int read = 0;
+//    int ptr = 0;
+//    while ((read = recv(s, &response[ptr], sizeof response - read, 0))) {
+//        ptr += read;
+//        if (ptr >= MAX_BUFFER) {
+//            break;
+//        }
+//    }
 
     strncpy(response, chunk, MAX_BUFFER);
 }
