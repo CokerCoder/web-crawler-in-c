@@ -44,6 +44,7 @@ int valid_url(char* url) {
 
 struct Url get_info(char* url) {
     struct Url info;
+
     sscanf(url, "http://%99[^/]%s[\n]", info.host, info.path);
     // If no path means root '/'
     if (!strcmp(info.path, "")) {

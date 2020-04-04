@@ -1,166 +1,64 @@
+//
+// Created by Neo on 4/04/2020.
+//
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <sys/socket.h>
-#include <sys/types.h>
 
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
 #include <unistd.h>
 #include "../lib/gumbo/gumbo.h"
 
-#include "url.h"
-
-#include <malloc.h>
+#include <fcntl.h>
+#include <sys/time.h>
 
 #define MAX_BUFFER 100000
 
-void parse_page(char* host, char* path, char** visited, int* total);
 
-static void search_for_links(GumboNode* node, char** list, int* count) {
-    if (node->type != GUMBO_NODE_ELEMENT) {
-        return;
-    }
-    GumboAttribute* href;
-    if (node->v.element.tag == GUMBO_TAG_A &&
-        (href = gumbo_get_attribute(&node->v.element.attributes, "href"))) {
+// Function to force the timeout between each recv to get the full data from the socket
+// https://www.binarytides.com/receive-full-data-with-recv-socket-function-in-c/
+void recv_timeout(int s , int timeout, char response[])
+{
+    int size_recv = 0;
+    int total_size= 0;
+    struct timeval begin , now;
+    double timediff;
 
-        // store the url to a string
-        char* url = (char*)href->value;
-        // Append the url to the list and increase the size by 1
-        strncpy(list[*count], url, strlen(url));
-        *count = *count + 1;
-    }
+    char chunk[MAX_BUFFER];
 
-    GumboVector* children = &node->v.element.children;
-    for (unsigned int i = 0; i < children->length; ++i) {
-        search_for_links((GumboNode*)(children->data[i]), list, count);
-    }
-}
+    //make socket non blocking
+    fcntl(s, F_SETFL, O_NONBLOCK);
 
+    //beginning time
+    gettimeofday(&begin , NULL);
 
-void parse_page(char* host, char* path, char** visited, int* total) {
-    int web_socket;
-    struct sockaddr_in serv_addr;
+    while(1)
+    {
+        gettimeofday(&now , NULL);
 
-    // Get the serv_addr host from the stdin and convert it to server IP address
-    struct hostent *server;
+        //time elapsed in seconds
+        timediff = (double)(now.tv_sec - begin.tv_sec) + 1e-6 * (double)(now.tv_usec - begin.tv_usec);
 
-    /* Translate host name into peer's IP address ;
-     * This is name translation service by the operating system
-     */
-    server = gethostbyname(host);
-
-    if (server == NULL) {
-        fprintf(stderr, "ERROR, no such host\n");
-        exit(0);
-    }
-
-    /* Building data structures for socket */
-
-    bzero((char *) &serv_addr, sizeof(serv_addr));
-
-    serv_addr.sin_family = AF_INET;
-
-    bcopy(server->h_addr_list[0], (char *) &serv_addr.sin_addr.s_addr, server->h_length);
-
-    serv_addr.sin_port = htons(80);
-
-    web_socket = socket(AF_INET, SOCK_STREAM, 0);
-
-    if (web_socket < 0) {
-        perror("ERROR opening socket");
-        exit(0);
-    }
-
-    if (connect(web_socket, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-        perror("ERROR connecting");
-        exit(0);
-    }
-
-    //Send some data
-    char request[1024];
-
-    sprintf(request, "GET %s HTTP/1.1\nHost: %s\nUser-Agent: jinyj\nConnection: close\r\n\r\n", path, host);
-
-    send(web_socket, request, strlen(request), 0);
-
-    char response[MAX_BUFFER];
-    int read = 0;
-    int ptr = 0;
-
-    while ((read = recv(web_socket, &response[ptr], sizeof response - read, 0))) {
-        ptr += read;
-        if (ptr >= MAX_BUFFER) {
+        //if you got some data, then break after timeout
+        if( total_size > 0 && timediff > timeout )
+        {
             break;
         }
-    }
 
-    close(web_socket);
-
-
-    // Store all the urls this page contains
-    char **urls;
-    urls = malloc(100 * sizeof *urls);
-    for (int i = 0; i < 100; i++) {
-        urls[i] = malloc(1000 * sizeof *urls[i]);
-    }
-    int count = 0;
-
-    GumboOutput *op = gumbo_parse(response);
-    // Free thr response memory right away
-    search_for_links(op->root, urls, &count);
-    gumbo_destroy_output(&kGumboDefaultOptions, op);
-
-//    printf("got here 1\n");
-
-    // Strip the tailing '/' again and save to list before output
-    char output[1000];
-    sprintf(output, "http://%s%s", host, path);
-    if(output[strlen(output-1)]=='/') {
-        output[strlen(output)-1] = (char) 0;
-    }
-
-//    printf("got here 2\n");
-//    printf("got here 3\n");
-//    printf("got here 4\n");
-    strncpy(visited[*total], output, strlen(output));
-
-//    printf("got here 5\n");
-    *total = *total + 1;
-//    printf("got here 6\n");
-
-    printf("%s\n", output);
-//    printf("number of urls visited: %d\n", *total);
-
-
-    // Checking the crawled urls
-    int i;
-    for (i = 0; i < count; i++) {
-        // Check the format of the url
-        if (check_url(urls[i]) == 0) {
-            // Turn to absolute url
-            to_abs(urls[i], host, path);
-            // Check if visited before
-            if (check_visited(urls[i], visited, *total) == 0) {
-                // If all good, go to the url
-
-//                printf("next visit: %s\n", urls[i]);
-                struct Url info = get_info(urls[i]);
-//                printf("host: %s, path: %s\n", info.host, info.path);
-                parse_page(info.host, info.path, visited, total);
-            }
+//        memset(chunk , 0 , MAX_BUFFER);	//clear the variable
+        if((size_recv =  recv(s , &chunk[total_size] , sizeof chunk - size_recv , 0) ) < 0)
+        {
+            //if nothing was received then we want to wait a little before trying again, 0.1 seconds
+            usleep(100000);
         }
+        else
+        {
+            total_size += size_recv;
+//            printf("%s" , chunk);
+            //reset beginning time
+            gettimeofday(&begin , NULL);
+        }
+
     }
-
-
-
-//    for (int j=0; j<100; j++)
-//    {
-//        free(urls[j]);
-//    }
-//    free(urls);
-
+    strncpy(response, chunk, MAX_BUFFER);
 }

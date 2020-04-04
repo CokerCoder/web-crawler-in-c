@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "url.h"
-#include "parse.h"
+#include "socket.h"
 
 
 int main(int argc , char *argv[])
@@ -26,8 +26,6 @@ int main(int argc , char *argv[])
 
     // Get the info of starting url
     struct Url info = get_info(starting_url);
-
-    printf("host: %s and path: %s\n", info.host, info.path);
 
     parse_page(info.host, info.path, visited, &total);
 
