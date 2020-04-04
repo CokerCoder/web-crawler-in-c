@@ -4,10 +4,6 @@
 
 #include "url.h"
 
-// TODO:
-void to_absolute(char* url) {
-
-}
 
 
 // Strip all tailing '/'
@@ -65,7 +61,7 @@ int check_url(char url[]) {
 
 // Turn every relative url to absolute
 void to_abs(char* relative, char* host, char* path) {
-    char abs[1000];
+    char abs[100];
 
     // If http://, nothing to do
     if (strlen(relative)>4 && strncmp(relative, "http://", 4)==0) {
@@ -92,7 +88,7 @@ void to_abs(char* relative, char* host, char* path) {
         sprintf(abs, "http:%s", relative);
     }
 
-    strncpy(relative, abs, 100);
+    strcpy(relative, abs);
 }
 
 // Function to check if already visited, take only absolute urls as parameter
@@ -103,6 +99,7 @@ int check_visited(char* abs_url, char** total_list, int total) {
         if (strncmp(abs_url, total_list[i], strlen(abs_url)-1) == 0) {
             return 1;
         }
+        printf("checked %s and %s they are different\n", abs_url, total_list[i]);
     }
     return 0;
 }

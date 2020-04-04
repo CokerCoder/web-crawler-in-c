@@ -23,6 +23,7 @@ static void search_for_links(GumboNode* node, char** list, int* count) {
     GumboAttribute* href;
     if (node->v.element.tag == GUMBO_TAG_A &&
         (href = gumbo_get_attribute(&node->v.element.attributes, "href"))) {
+//        printf("got url: %s\n", href->value);
         // Append the url to the list and increase the size by 1
         strcpy(list[*count], href->value);
         *count = *count + 1;
@@ -96,6 +97,11 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 //    printf("response: %s\n", response);
 
     close(web_socket);
+//
+//    int c;
+//    for (c=0;c<*total;c++) {
+//        printf("current visited number %d is %s\n", c, visited[c]);
+//    }
 
 
     // Store all the urls this page contains
