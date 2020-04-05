@@ -94,9 +94,10 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         }
     }
 
+    close(web_socket);
+
 //    printf("response: %s\n", response);
 
-    close(web_socket);
 
     // Check status code
     char status[4];
@@ -110,6 +111,17 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         parse_page(host, path, visited, total);
     }
     if (strncmp(status, "401", 3) == 0) {
+        web_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+        if (web_socket < 0) {
+            perror("ERROR opening socket");
+            exit(0);
+        }
+
+        if (connect(web_socket, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+            perror("ERROR connecting");
+            exit(0);
+        }
         char request_re[2048];
         //Send some data
 
@@ -129,7 +141,9 @@ void parse_page(char* host, char* path, char** visited, int* total) {
             }
         }
 
+        close(web_socket);
 
+//        printf("response_re: %s\n", response_re);
 
         // Store all the urls this page contains
         char **urls;
@@ -195,6 +209,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 
         return;
     }
+
 
     // Get the content type
     char *result = strstr(response, "Content-Type");
