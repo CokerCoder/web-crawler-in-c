@@ -126,6 +126,10 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         output[strlen(output)-1] = (char) 0;
     }
 
+    if (*total == 100) {
+        return;
+    }
+
     strncpy(visited[*total], output, strlen(output));
 
 //    printf("got here 5\n");
