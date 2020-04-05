@@ -100,7 +100,7 @@ void to_abs(char* relative, char* host, char* path) {
         else {
             // Retrieve the pointer to the last occurrence of the '/'
             char* last_dir = strrchr(path, '/');
-            memcpy(last_dir, relative, strlen(relative)-1);
+            memcpy(last_dir+1, relative, strlen(relative)-1);
             sprintf(abs, "http://%s%s\n", host, path);
         }
 
