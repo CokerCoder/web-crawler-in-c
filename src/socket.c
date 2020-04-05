@@ -94,7 +94,18 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         }
     }
 
-//    printf("response: %s\n", response);
+    // Check status code
+
+
+//    printf("response: \n%s\n", response);
+
+    // Check status code
+    char status[4];
+    memcpy(status, &response[9], 3 );
+    status[3] = '\0';
+    if (strncmp(status, "200", 3) == 1) {
+        return;
+    }
 
     close(web_socket);
 //
