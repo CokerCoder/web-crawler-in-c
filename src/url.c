@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 
 #include "url.h"
 
@@ -17,6 +16,13 @@ void check_ending(char* url) {
 int valid_url(char* url) {
 
     if (strlen(url) > 1000) {
+        return 1;
+    }
+
+    // This check the start and the end of a url, make sure there is no spaces
+    // However, as the urls in the project given is guaranteed to be a valid one
+    // this condition may only check on the test websites
+    if (url[0] == ' ' || url[strlen(url)-1] == ' ') {
         return 1;
     }
 
@@ -99,7 +105,6 @@ int check_visited(char* abs_url, char** total_list, int total) {
         if (strncmp(abs_url, total_list[i], strlen(abs_url)-1) == 0) {
             return 1;
         }
-        printf("checked %s and %s they are different\n", abs_url, total_list[i]);
     }
     return 0;
 }

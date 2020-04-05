@@ -102,6 +102,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 //    for (c=0;c<*total;c++) {
 //        printf("current visited number %d is %s\n", c, visited[c]);
 //    }
+//    printf("\n");
 
 
     // Store all the urls this page contains
@@ -121,7 +122,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     // Strip the tailing '/' again and save to list before output
     char output[1000];
     sprintf(output, "http://%s%s", host, path);
-    if(output[strlen(output-1)]=='/') {
+    if(output[strlen(output)-1]=='/') {
         output[strlen(output)-1] = (char) 0;
     }
 
