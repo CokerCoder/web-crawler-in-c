@@ -87,7 +87,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     int read = 0;
     int ptr = 0;
 
-    while ((read = recv(web_socket, &response[ptr], sizeof response - read, 0))) {
+    while ((read = recv(web_socket, &response[ptr], MAX_BUFFER, 0))) {
         ptr += read;
         if (ptr >= MAX_BUFFER) {
             break;
@@ -123,7 +123,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     char output[1000];
     sprintf(output, "http://%s%s", host, path);
     if(output[strlen(output)-1]=='/') {
-        output[strlen(output)-1] = (char) 0;
+        output[strlen(output)-1] = '\0';
     }
 
     if (*total == 100) {

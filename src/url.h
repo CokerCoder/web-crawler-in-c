@@ -6,8 +6,8 @@
 #define UNTITLED_URL_H
 
 struct Url {
-    char host[1000];
-    char path[1000];
+    char host[500];
+    char path[500];
 };
 
 void check_ending(char* url);
