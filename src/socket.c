@@ -71,7 +71,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     }
 
     if (connect(web_socket, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-        perror("ERROR connecting");`
+        perror("ERROR connecting");
         exit(0);
     }
 
