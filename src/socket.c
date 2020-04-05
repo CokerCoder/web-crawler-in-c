@@ -103,9 +103,26 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     char status[4];
     memcpy(status, &response[9], 3 );
     status[3] = '\0';
-    if (strncmp(status, "200", 3) == 1) {
+    if (strncmp(status, "200", 3) == 0) {
+        //
+    }
+
+    // Get the content type
+    char *result = strstr(response, "Content-Type");
+    if (result) {
+
+        char type[10];
+        strncpy(type, result+14, 9);
+        type[9] = '\0';
+
+        if (strncmp(type, "text/html", 9) == 1) {
+            return;
+        }
+    } else {
         return;
     }
+
+//    printf("response: %s\n", response);
 
     close(web_socket);
 //
