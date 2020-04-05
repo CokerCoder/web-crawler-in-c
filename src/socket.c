@@ -94,13 +94,6 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         }
     }
 
-    // Check status code
-
-
-//    printf("response: \n%s\n", response);
-
-
-
 //    printf("response: %s\n", response);
 
     close(web_socket);
@@ -120,7 +113,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         char request_re[2048];
         //Send some data
 
-        sprintf(request_re, "GET %s HTTP/1.1\r\nHost: %s\r\nAuthorization: Basic (jinyj:password)\r\nUser-Agent: jinyj\r\nConnection: close\r\n\r\n", path, host);
+        sprintf(request_re, "GET %s HTTP/1.1\r\nHost: %s\r\nAuthorization: Basic jinyj:password\r\nUser-Agent: jinyj\r\nConnection: close\r\n\r\n", path, host);
 
         send(web_socket, request_re, strlen(request_re), 0);
 //
@@ -136,20 +129,6 @@ void parse_page(char* host, char* path, char** visited, int* total) {
             }
         }
 
-        // Get the content type
-        char *result = strstr(response_re, "Content-Type");
-        if (result) {
-
-            char type[10];
-            strncpy(type, result+14, 9);
-            type[9] = '\0';
-
-            if (strncmp(type, "text/html", 9) == 1) {
-                return;
-            }
-        } else {
-            return;
-        }
 
 
         // Store all the urls this page contains
