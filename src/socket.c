@@ -125,15 +125,96 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         send(web_socket, request_re, strlen(request_re), 0);
 //
 //    printf("request: %s\n", request);
+        char response_re[MAX_BUFFER];
         int read_re = 0;
         int ptr_re = 0;
 
-        while ((read_re = recv(web_socket, &response[ptr_re], MAX_BUFFER, 0))) {
+        while ((read_re = recv(web_socket, &response_re[ptr_re], MAX_BUFFER, 0))) {
             ptr_re += read_re;
             if (ptr_re >= MAX_BUFFER) {
                 break;
             }
         }
+
+        // Get the content type
+        char *result = strstr(response_re, "Content-Type");
+        if (result) {
+
+            char type[10];
+            strncpy(type, result+14, 9);
+            type[9] = '\0';
+
+            if (strncmp(type, "text/html", 9) == 1) {
+                return;
+            }
+        } else {
+            return;
+        }
+
+
+        // Store all the urls this page contains
+        char **urls;
+        urls = malloc(100 * sizeof *urls);
+        for (int i = 0; i < 100; i++) {
+            urls[i] = malloc(1000 * sizeof *urls[i]);
+        }
+        int count = 0;
+
+        GumboOutput *op = gumbo_parse(response_re);
+        // Free thr response memory right away
+        search_for_links(op->root, urls, &count);
+        gumbo_destroy_output(&kGumboDefaultOptions, op);
+
+
+        // Strip the tailing '/' again and save to list before output
+        char output[1000];
+        sprintf(output, "http://%s%s", host, path);
+        if(output[strlen(output)-1]=='/') {
+            output[strlen(output)-1] = '\0';
+        }
+
+        if (*total == 100) {
+            return;
+        }
+
+        strncpy(visited[*total], output, strlen(output));
+
+//    printf("got here 5\n");
+        *total = *total + 1;
+//    printf("got here 6\n");
+
+        printf("%s\n", output);
+//    printf("number of urls visited: %d\n", *total);
+
+
+        // Checking the crawled urls
+        int i;
+        for (i = 0; i < count; i++) {
+            // Check the format of the url
+            if (check_url(urls[i]) == 0) {
+                // Turn to absolute url
+                to_abs(urls[i], host, path);
+                // Check if visited before and the host components
+                if (check_visited(urls[i], visited, *total) == 0 && check_components(urls[i], host) == 0) {
+                    // If all good, go to the url
+
+//                printf("next visit: %s\n", urls[i]);
+                    struct Url info = get_info(urls[i]);
+//                printf("host: %s, path: %s\n", info.host, info.path);
+                    parse_page(info.host, info.path, visited, total);
+                }
+            }
+        }
+
+
+
+        for (int j=0; j<100; j++)
+        {
+            free(urls[j]);
+        }
+        free(urls);
+
+        return;
     }
 
     // Get the content type
