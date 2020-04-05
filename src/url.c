@@ -79,9 +79,31 @@ void to_abs(char* relative, char* host, char* path) {
         sprintf(abs, "http://%s%s\n", host, path);
     }
 
-    // 1. form of "a.html", append to the end directly
+    // 1. form of "a.html", append to the end folder
     else if (relative[0]!='/') {
-        sprintf(abs, "http://%s%s%s\n", host, path, relative);
+
+        // Check if char '.' appears in the path, if appears means the path itself is a file, otherwise is a directory
+        // if it is a directory, append the relative path to the end directly
+        // or of it is a file, then replace the file name with the new relative path
+
+        // Define type, whether 'd' stands for "directory", or 'f' stands for "file"
+        char type;
+        if (strchr(path, '.')) {
+            type = 'f';
+        } else {
+            type = 'd';
+        }
+
+        if (type == 'd') {
+            sprintf(abs, "http://%s%s%s\n", host, path, relative);
+        }
+        else {
+            // Retrieve the pointer to the last occurrence of the '/'
+            char* last_dir = strrchr(path, '/');
+            memcpy(last_dir, relative, strlen(relative)-1);
+            sprintf(abs, "http://%s%s\n", host, path);
+        }
+
     }
 
     // 2. form of "/a.html", append to the host name
