@@ -105,9 +105,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         strncpy(type, result+14, 9);
         type[9] = '\0';
 
-        printf("Content-Type: %s\n", type);
-
-        if (strncmp(type, "text/html", 9) == 1) {
+        if (strncmp(type, "text/html", 9) != 0) {
             return;
         }
     } else {
