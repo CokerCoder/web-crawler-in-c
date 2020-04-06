@@ -232,6 +232,8 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         char new_url[1000];
         sscanf(next_url, "Location: %1000[^\n]\n", new_url);
 
+        printf("301 found! need to go to : %s instead\n", new_url);
+
         struct Url info = get_info(next_url);
         parse_page(info.host, info.path, visited, total);
         return;
