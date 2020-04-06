@@ -137,9 +137,9 @@ void parse_page(char* host, char* path, char** visited, int* total) {
             perror("ERROR connecting");
             exit(0);
         }
+
         char request_re[2048];
         //Send some data
-
         sprintf(request_re, "GET %s HTTP/1.1\r\nHost: %s\r\nAuthorization: Basic amlueWo6cGFzc3dvcmQ=\r\nUser-Agent: jinyj\r\nConnection: close\r\n\r\n", path, host);
 
         send(web_socket, request_re, strlen(request_re), 0);

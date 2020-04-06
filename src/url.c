@@ -41,6 +41,7 @@ int valid_url(char* url) {
         return 1;
     }
 
+
     return 0;
 }
 
