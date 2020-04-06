@@ -97,22 +97,6 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 
 //    printf("response: %s\n", response);
 
-     //Get the content type
-    char *result = strstr(response, "Content-Type");
-    if (result) {
-
-        char type[10];
-        strncpy(type, result+14, 9);
-        type[9] = '\0';
-
-        if (strncmp(type, "text/html", 9) != 0) {
-            return;
-        }
-    } else {
-        return;
-    }
-
-
     // Check status code
     char status[4];
     memcpy(status, &response[9], 3 );
@@ -234,6 +218,21 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 
         struct Url info = get_info(new_url);
         parse_page(info.host, info.path, visited, total);
+        return;
+    }
+
+    //Get the content type
+    char *result = strstr(response, "Content-Type");
+    if (result) {
+
+        char type[10];
+        strncpy(type, result+14, 9);
+        type[9] = '\0';
+
+        if (strncmp(type, "text/html", 9) != 0) {
+            return;
+        }
+    } else {
         return;
     }
 
