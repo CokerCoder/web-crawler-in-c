@@ -97,6 +97,28 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 
 //    printf("response: %s\n", response);
 
+    // Strip the tailing '/' again and save to list before output
+    char output[1000];
+    sprintf(output, "http://%s%s", host, path);
+    if(output[strlen(output)-1]=='/') {
+        output[strlen(output)-1] = '\0';
+    }
+    output[strlen(output)] = '\0';
+
+    if (*total == 100) {
+        return;
+    }
+
+    strncpy(visited[*total], output, strlen(output));
+
+//    printf("got here 5\n");
+    *total = *total + 1;
+//    printf("got here 6\n");
+
+    printf("%s\n", output);
+//    printf("number of urls visited: %d\n", *total);
+
+
     // Check status code
     char status[4];
     memcpy(status, &response[9], 3 );
@@ -274,26 +296,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     gumbo_destroy_output(&kGumboDefaultOptions, op);
 
 
-    // Strip the tailing '/' again and save to list before output
-    char output[1000];
-    sprintf(output, "http://%s%s", host, path);
-    if(output[strlen(output)-1]=='/') {
-        output[strlen(output)-1] = '\0';
-    }
-    output[strlen(output)] = '\0';
 
-    if (*total == 100) {
-        return;
-    }
-
-    strncpy(visited[*total], output, strlen(output));
-
-//    printf("got here 5\n");
-    *total = *total + 1;
-//    printf("got here 6\n");
-
-    printf("%s\n", output);
-//    printf("number of urls visited: %d\n", *total);
 
 
     // Checking the crawled urls
