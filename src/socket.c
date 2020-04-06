@@ -123,6 +123,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     if (strncmp(status, "503", 3) == 0 || strncmp(status, "504", 3) == 0) {
         // re-fetch the page
         parse_page(host, path, visited, total);
+        return;
     }
     if (strncmp(status, "401", 3) == 0) {
         web_socket = socket(AF_INET, SOCK_STREAM, 0);
