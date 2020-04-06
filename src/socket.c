@@ -236,9 +236,6 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         parse_page(info.host, info.path, visited, total);
         return;
     }
-    if (strncmp(status, "410", 3) == 0) {
-        return;
-    }
 
 
 //     Split header and body to check the content length
