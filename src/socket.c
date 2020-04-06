@@ -249,7 +249,6 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         return;
     }
 
-
     // Store all the urls this page contains
     char **urls;
     urls = malloc(100 * sizeof *urls);
