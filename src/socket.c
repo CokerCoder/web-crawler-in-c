@@ -120,7 +120,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     if (strncmp(status, "200", 3) == 0) {
         //
     }
-    if (strncmp(status, "503", 3) == 0) {
+    if (strncmp(status, "503", 3) == 0 || strncmp(status, "504", 3) == 0) {
         // re-fetch the page
         parse_page(host, path, visited, total);
     }
