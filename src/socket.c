@@ -98,6 +98,21 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 
 //    printf("response: %s\n", response);
 
+    // Get the content type
+    char *result = strstr(response, "Content-Type");
+    if (result) {
+
+        char type[10];
+        strncpy(type, result+14, 9);
+        type[9] = '\0';
+
+        if (strncmp(type, "text/html", 9) == 1) {
+            return;
+        }
+    } else {
+        return;
+    }
+
 
     // Check status code
     char status[4];
@@ -211,18 +226,26 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     }
 
 
-    // Get the content type
-    char *result = strstr(response, "Content-Type");
-    if (result) {
+//     Split header and body to check the content length
+    const char splitter[] = "\r\n\r\n";
+    const char length[] = "Content-Length";
 
-        char type[10];
-        strncpy(type, result+14, 9);
-        type[9] = '\0';
+    char* body;
+    body = strstr(response, splitter) + 4;
+    char* header;
+    header = strstr(response, length);
 
-        if (strncmp(type, "text/html", 9) == 1) {
-            return;
-        }
-    } else {
+    char content_length[10];
+    if (header) {
+        sscanf(header, "Content-Length: %10[^\n]\n", content_length);
+    }
+
+    int expected, actual;
+
+    expected = atoi(content_length);
+    actual = strlen(body);
+
+    if (actual < expected) {
         return;
     }
 

@@ -67,7 +67,7 @@ int check_url(char* url) {
 
 // Turn every relative url to absolute
 void to_abs(char* relative, char* host, char* path) {
-    char abs[100];
+    char abs[1000];
 
     // If http://, nothing to do
     if (strlen(relative)>4 && strncmp(relative, "http://", 4)==0) {
