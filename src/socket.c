@@ -223,6 +223,18 @@ void parse_page(char* host, char* path, char** visited, int* total) {
 
         return;
     }
+    if (strncmp(status, "301", 3) == 0) {
+        const char state[] = "Location";
+        char* next_url;
+        next_url = strstr(response, state);
+
+        char new_url[1000];
+        sscanf(next_url, "Location: %1000[^\n]\n", new_url);
+
+        struct Url info = get_info(next_url);
+        parse_page(info.host, info.path, visited, total);
+        return;
+    }
 
 
 //     Split header and body to check the content length
