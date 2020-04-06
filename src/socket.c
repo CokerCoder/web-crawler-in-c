@@ -125,105 +125,105 @@ void parse_page(char* host, char* path, char** visited, int* total) {
         parse_page(host, path, visited, total);
         return;
     }
-//    if (strncmp(status, "401", 3) == 0) {
-//        web_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (strncmp(status, "401", 3) == 0) {
+        web_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+        if (web_socket < 0) {
+            perror("ERROR opening socket");
+            exit(0);
+        }
+
+        if (connect(web_socket, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+            perror("ERROR connecting");
+            exit(0);
+        }
+
+        char request_re[2048];
+        //Send some data
+        sprintf(request_re, "GET %s HTTP/1.1\r\nHost: %s\r\nAuthorization: Basic amlueWo6cGFzc3dvcmQ=\r\nUser-Agent: jinyj\r\nConnection: close\r\n\r\n", path, host);
+
+        send(web_socket, request_re, strlen(request_re), 0);
 //
-//        if (web_socket < 0) {
-//            perror("ERROR opening socket");
-//            exit(0);
-//        }
-//
-//        if (connect(web_socket, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-//            perror("ERROR connecting");
-//            exit(0);
-//        }
-//
-//        char request_re[2048];
-//        //Send some data
-//        sprintf(request_re, "GET %s HTTP/1.1\r\nHost: %s\r\nAuthorization: Basic amlueWo6cGFzc3dvcmQ=\r\nUser-Agent: jinyj\r\nConnection: close\r\n\r\n", path, host);
-//
-//        send(web_socket, request_re, strlen(request_re), 0);
-////
-////    printf("request: %s\n", request);
-//        char response_re[MAX_BUFFER];
-//        int read_re = 0;
-//        int ptr_re = 0;
-//
-//        while ((read_re = recv(web_socket, &response_re[ptr_re], MAX_BUFFER, 0))) {
-//            ptr_re += read_re;
-//            if (ptr_re >= MAX_BUFFER) {
-//                break;
-//            }
-//        }
-//
-//        close(web_socket);
-//
-////        printf("response_re: %s\n", response_re);
-//
-//        // Store all the urls this page contains
-//        char **urls;
-//        urls = malloc(100 * sizeof *urls);
-//        for (int i = 0; i < 100; i++) {
-//            urls[i] = malloc(1000 * sizeof *urls[i]);
-//        }
-//        int count = 0;
-//
-//        GumboOutput *op = gumbo_parse(response_re);
-//        // Free thr response memory right away
-//        search_for_links(op->root, urls, &count);
-//        gumbo_destroy_output(&kGumboDefaultOptions, op);
-//
-//
-//        // Strip the tailing '/' again and save to list before output
-//        char output[1000];
-//        sprintf(output, "http://%s%s", host, path);
-//        if(output[strlen(output)-1]=='/') {
-//            output[strlen(output)-1] = '\0';
-//        }
-//
-//        if (*total == 100) {
-//            return;
-//        }
-//
-//        strncpy(visited[*total], output, strlen(output));
-//
-////    printf("got here 5\n");
-//        *total = *total + 1;
-////    printf("got here 6\n");
-//
-//        printf("%s\n", output);
-////    printf("number of urls visited: %d\n", *total);
-//
-//
-//        // Checking the crawled urls
-//        int i;
-//        for (i = 0; i < count; i++) {
-//            // Check the format of the url
-//            if (check_url(urls[i]) == 0) {
-//                // Turn to absolute url
-//                to_abs(urls[i], host, path);
-//                // Check if visited before and the host components
-//                if (check_visited(urls[i], visited, *total) == 0 && check_components(urls[i], host) == 0) {
-//                    // If all good, go to the url
-//
-////                printf("next visit: %s\n", urls[i]);
-//                    struct Url info = get_info(urls[i]);
-////                printf("host: %s, path: %s\n", info.host, info.path);
-//                    parse_page(info.host, info.path, visited, total);
-//                }
-//            }
-//        }
-//
-//
-//
-//        for (int j=0; j<100; j++)
-//        {
-//            free(urls[j]);
-//        }
-//        free(urls);
-//
-//        return;
-//    }
+//    printf("request: %s\n", request);
+        char response_re[MAX_BUFFER];
+        int read_re = 0;
+        int ptr_re = 0;
+
+        while ((read_re = recv(web_socket, &response_re[ptr_re], MAX_BUFFER, 0))) {
+            ptr_re += read_re;
+            if (ptr_re >= MAX_BUFFER) {
+                break;
+            }
+        }
+
+        close(web_socket);
+
+//        printf("response_re: %s\n", response_re);
+
+        // Store all the urls this page contains
+        char **urls;
+        urls = malloc(100 * sizeof *urls);
+        for (int i = 0; i < 100; i++) {
+            urls[i] = malloc(1000 * sizeof *urls[i]);
+        }
+        int count = 0;
+
+        GumboOutput *op = gumbo_parse(response_re);
+        // Free thr response memory right away
+        search_for_links(op->root, urls, &count);
+        gumbo_destroy_output(&kGumboDefaultOptions, op);
+
+
+        // Strip the tailing '/' again and save to list before output
+        char output[1000];
+        sprintf(output, "http://%s%s", host, path);
+        if(output[strlen(output)-1]=='/') {
+            output[strlen(output)-1] = '\0';
+        }
+
+        if (*total == 100) {
+            return;
+        }
+
+        strncpy(visited[*total], output, strlen(output));
+
+//    printf("got here 5\n");
+        *total = *total + 1;
+//    printf("got here 6\n");
+
+        printf("%s\n", output);
+//    printf("number of urls visited: %d\n", *total);
+
+
+        // Checking the crawled urls
+        int i;
+        for (i = 0; i < count; i++) {
+            // Check the format of the url
+            if (check_url(urls[i]) == 0) {
+                // Turn to absolute url
+                to_abs(urls[i], host, path);
+                // Check if visited before and the host components
+                if (check_visited(urls[i], visited, *total) == 0 && check_components(urls[i], host) == 0) {
+                    // If all good, go to the url
+
+//                printf("next visit: %s\n", urls[i]);
+                    struct Url info = get_info(urls[i]);
+//                printf("host: %s, path: %s\n", info.host, info.path);
+                    parse_page(info.host, info.path, visited, total);
+                }
+            }
+        }
+
+
+
+        for (int j=0; j<100; j++)
+        {
+            free(urls[j]);
+        }
+        free(urls);
+
+        return;
+    }
     if (strncmp(status, "301", 3) == 0) {
         const char state[] = "Location";
         char* next_url;
