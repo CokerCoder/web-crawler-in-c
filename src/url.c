@@ -143,10 +143,10 @@ int check_visited(char* abs_url, char** total_list, int total) {
 int check_components(char* url, char* host) {
 
     struct Url info;
-    char check_first[500];
-    char check_second[500];
-    char expected_first[500];
-    char expected_second[500];
+    char check_first[1000];
+    char check_second[1000];
+    char expected_first[1000];
+    char expected_second[1000];
 
     sscanf(url, "http://%99[^/]%s[\n]", info.host, info.path);
 
