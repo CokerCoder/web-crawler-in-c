@@ -49,8 +49,7 @@ void parse_page(char* host, char* path, char** visited, int* total) {
     server = gethostbyname(host);
 
     if (server == NULL) {
-        fprintf(stderr, "ERROR, no such host\n");
-        exit(0);
+        return;
     }
 
     /* Building data structures for socket */
