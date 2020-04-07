@@ -1,5 +1,5 @@
 //
-// Created by Neo on 31/03/2020.
+// Created by Yunfei on 31/03/2020.
 //
 
 #ifndef UNTITLED_URL_H
@@ -16,10 +16,9 @@ int valid_url(char* url);
 
 int check_url(char url[]);
 
-
 struct Url get_info(char* url);
 
-void to_abs(char* relative, char* host, char* path);
+void to_abs(char* given, char* host, char* path);
 
 int check_visited(char* abs_url, char** total_list, int total);
 

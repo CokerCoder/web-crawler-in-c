@@ -1,5 +1,5 @@
 //
-// Created by Neo on 1/04/2020.
+// Created by Yunfei on 1/04/2020.
 //
 
 #ifndef UNTITLED_SOCKET_H
@@ -8,6 +8,6 @@
 #include "../lib/gumbo/gumbo.h"
 
 static void search_for_links(GumboNode* node, char** list, int* count);
-void parse_page(char* host, char* path, char** visited, int* total);
+void parse_page(char* host, char* path, char** visited, int* total, int if_401);
 
 #endif //UNTITLED_SOCKET_H

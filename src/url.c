@@ -4,7 +4,6 @@
 #include "url.h"
 
 
-
 // Strip all tailing '/'
 void check_ending(char* url) {
     unsigned long url_length = strlen(url);
@@ -13,6 +12,14 @@ void check_ending(char* url) {
     }
 }
 
+/*
+ * Function to check if an url is valid
+ * A valid url in this project is considered:
+ * - has less than 1000 bytes
+ * - does not contain '.' or ".." (can exist but ignored)
+ * - does not contain '%', '?', or '#' (can exist but ignored)
+ * return 0 if the url is valid otherwise return 1
+*/
 int valid_url(char* url) {
 
     if (strlen(url) > 1000) {
@@ -45,9 +52,14 @@ int valid_url(char* url) {
     return 0;
 }
 
-struct Url get_info(char* url) {
-    struct Url info;
 
+/*
+ * Get the basic information: host and path from a given absolute url
+ * and store them into a Url structure
+ */
+struct Url get_info(char* url) {
+    // Initialize the structure
+    struct Url info = {"", ""};
     sscanf(url, "http://%99[^/]%s[\n]", info.host, info.path);
     // If no path means root '/'
     if (!strcmp(info.path, "")) {
@@ -56,36 +68,40 @@ struct Url get_info(char* url) {
     return info;
 }
 
+
+/*
+ * This function automatically remove the tailing '/' after checking if it's a valid url
+ */
 int check_url(char* url) {
 
-    int outcome = valid_url(url);
-    if (outcome == 1) {
+    int valid = valid_url(url);
+    if (valid == 1) {
         return 1;
     }
     check_ending(url);
     return 0;
 }
 
-// Turn every relative url to absolute
-void to_abs(char* relative, char* host, char* path) {
+// Turn every given url to absolute based on the given part
+void to_abs(char* given, char* host, char* path) {
     char abs[1000];
 
     // If http://, nothing to do
-    if (strlen(relative)>4 && strncmp(relative, "http://", 4)==0) {
-        sprintf(abs, "%s\n", relative);
+    if (strlen(given) > 4 && strncmp(given, "http://", 4) == 0) {
+        sprintf(abs, "%s\n", given);
     }
 
     // 0. If single '/', same page
-    else if (strlen(relative)==1 && relative[0] == '/') {
+    else if (strlen(given) == 1 && given[0] == '/') {
         sprintf(abs, "http://%s%s\n", host, path);
     }
 
     // 1. form of "a.html", append to the end folder
-    else if (relative[0]!='/') {
+    else if (given[0] != '/') {
 
         // Check if char '.' appears in the path, if appears means the path itself is a file, otherwise is a directory
-        // if it is a directory, append the relative path to the end directly
-        // or of it is a file, then replace the file name with the new relative path
+        // if it is a directory, append the given path to the end directly
+        // or of it is a file, then replace the file name with the new given path
 
         // Define type, whether 'd' stands for "directory", or 'f' stands for "file"
         char type;
@@ -97,33 +113,33 @@ void to_abs(char* relative, char* host, char* path) {
 
         if (type == 'd') {
             if (path[strlen(path) - 1] != '/') {
-                sprintf(abs, "http://%s%s/%s\n", host, path, relative);
+                sprintf(abs, "http://%s%s/%s\n", host, path, given);
             } else {
-                sprintf(abs, "http://%s%s%s\n", host, path, relative);
+                sprintf(abs, "http://%s%s%s\n", host, path, given);
             }
         }
 
         else {
             // Retrieve the pointer to the last occurrence of the '/'
             char* last_dir = strrchr(path, '/');
-            memcpy(last_dir+1, relative, strlen(relative));
-            *(last_dir+strlen(relative)+1) = '\0';
+            memcpy(last_dir+1, given, strlen(given));
+            *(last_dir + strlen(given) + 1) = '\0';
             sprintf(abs, "http://%s%s\n", host, path);
         }
 
     }
 
     // 2. form of "/a.html", append to the host name
-    else if (relative[0]=='/' && relative[1]!='/') {
-        sprintf(abs, "http://%s%s", host, relative);
+    else if (given[0] == '/' && given[1] != '/') {
+        sprintf(abs, "http://%s%s", host, given);
     }
 
     // 3. form of "//a.html", append to http:
-    else if (relative[0]=='/' && relative[1]=='/') {
-        sprintf(abs, "http:%s", relative);
+    else if (given[0] == '/' && given[1] == '/') {
+        sprintf(abs, "http:%s", given);
     }
 
-    strcpy(relative, abs);
+    strcpy(given, abs);
 }
 
 // Function to check if already visited, take only absolute urls as parameter
@@ -139,24 +155,21 @@ int check_visited(char* abs_url, char** total_list, int total) {
 }
 
 // Function to check the components of the url
-// return 0 if not valid
+// Only look at the urls that all but the first components of its host name are the same
+// return 0 if valid, otherwise return 1
 int check_components(char* url, char* host) {
 
     struct Url info;
-    char check_first[1000];
-    char check_second[1000];
-    char expected_first[1000];
-    char expected_second[1000];
+    char check_comp[1000];
+    char expected_comp[1000];
 
     sscanf(url, "http://%99[^/]%s[\n]", info.host, info.path);
+    sscanf(host, "%*[^.].%s", check_comp);
+    sscanf(info.host, "%*[^.].%s", expected_comp);
 
-    sscanf(host, "%99[^.].%s", check_first, check_second);
-    sscanf(info.host, "%99[^.].%s", expected_first, expected_second);
-
-
-    if (strcmp(check_second, expected_second) == 0) {
-        return 0;
+    if (strcmp(check_comp, expected_comp) == 0) {
+        return 1;
     }
 
-    return 1;
+    return 0;
 }

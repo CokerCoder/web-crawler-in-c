@@ -7,6 +7,8 @@
 
 int main(int argc , char *argv[])
 {
+
+    // Get the hostname from stdin
     if (argc < 2)
     {
         fprintf(stderr, "usage %s hostname\n", argv[0]);
@@ -27,7 +29,14 @@ int main(int argc , char *argv[])
     // Get the info of starting url
     struct Url info = get_info(starting_url);
 
-    parse_page(info.host, info.path, visited, &total);
+    // Recursively parse and follow the links
+    parse_page(info.host, info.path, visited, &total, 0);
+
+    // Free the allocated memory
+    for (int j = 0; j < 100; j++) {
+        free(visited[j]);
+    }
+    free(visited);
 
 	return 0;
 }
