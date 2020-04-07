@@ -4,6 +4,7 @@
 #include "url.h"
 
 
+
 // Strip all tailing '/'
 void check_ending(char* url) {
     unsigned long url_length = strlen(url);
@@ -160,14 +161,18 @@ int check_visited(char* abs_url, char** total_list, int total) {
 int check_components(char* url, char* host) {
 
     struct Url info;
-    char check_comp[1000];
-    char expected_comp[1000];
+    char check_first[1000];
+    char check_second[1000];
+    char expected_first[1000];
+    char expected_second[1000];
 
     sscanf(url, "http://%99[^/]%s[\n]", info.host, info.path);
-    sscanf(host, "%*[^.].%s", check_comp);
-    sscanf(info.host, "%*[^.].%s", expected_comp);
 
-    if (strcmp(check_comp, expected_comp) == 0) {
+    sscanf(host, "%99[^.].%s", check_first, check_second);
+    sscanf(info.host, "%99[^.].%s", expected_first, expected_second);
+
+
+    if (strcmp(check_second, expected_second) == 0) {
         return 1;
     }
 
