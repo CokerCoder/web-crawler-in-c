@@ -173,8 +173,8 @@ int check_components(char* url, char* host) {
 
 
     if (strcmp(check_second, expected_second) == 0) {
-        return 1;
+        return 0;
     }
 
-    return 0;
+    return 1;
 }
