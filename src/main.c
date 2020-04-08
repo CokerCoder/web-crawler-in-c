@@ -21,6 +21,10 @@ int main(int argc , char *argv[])
     // List of urls that have been visited, 100 maximum
     char **visited;
     visited = malloc(100 * sizeof *visited);
+    if (!visited) {
+        fprintf(stderr, "could not allocate memory for visited urls\n");
+        exit(0);
+    }
     for (int i = 0; i < 100; i++) {
         visited[i] = malloc(1000 * sizeof *visited[i]);
     }

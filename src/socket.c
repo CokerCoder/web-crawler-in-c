@@ -87,6 +87,10 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
 
     char* response;
     response = (char*)malloc(MAX_BUFFER * sizeof(char));
+    if (response) {
+        fprintf(stderr, "could not allocate memory for response\n");
+        exit(0);
+    }
 
     int read = 0;
     int ptr = 0;
@@ -201,6 +205,10 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     // Allocate the memory spaces for the urls that this page contains
     char **urls;
     urls = malloc(100 * sizeof *urls);
+    if (!urls) {
+        fprintf(stderr, "could not allocate memory for urls\n");
+        exit(0);
+    }
     for (int i = 0; i < 100; i++) {
         urls[i] = malloc(1000 * sizeof *urls[i]);
     }
