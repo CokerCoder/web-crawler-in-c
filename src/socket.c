@@ -85,7 +85,9 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     send(web_socket, request, strlen(request), 0);
 
 
-    char response[MAX_BUFFER];
+    char *response;
+    response = (char*)malloc(MAX_BUFFER * sizeof(char));
+
     int read = 0;
     int ptr = 0;
 
@@ -126,16 +128,19 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     }
     if (strncmp(status, "401", 3) == 0) {
         // Re-fetch the page with the checker field on
+        free(response);
         parse_page(host, path, visited, total, 1);
         return;
     }
     if (strncmp(status, "503", 3) == 0 || strncmp(status, "504", 3) == 0) {
         // re-fetch the page
+        free(response);
         parse_page(host, path, visited, total, 0);
         return;
     }
     if (strncmp(status, "301", 3) == 0) {
         // Get the alternative location from the header and follow that url
+        free(response);
         const char state[] = "Location";
         char* next_url;
         next_url = strstr(response, state);
@@ -200,6 +205,8 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     GumboOutput *op = gumbo_parse(response);
     search_for_links(op->root, urls, &count);
     gumbo_destroy_output(&kGumboDefaultOptions, op);
+
+    free(response);
 
 
     // Checking the crawled urls
