@@ -85,7 +85,9 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     send(web_socket, request, strlen(request), 0);
 
 
-    char response[MAX_BUFFER];
+    char* response;
+    response = (char*)malloc(MAX_BUFFER * sizeof(char));
+
     int read = 0;
     int ptr = 0;
 
@@ -113,6 +115,7 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
 
     // If the number of urls visited reached 100, then we stop
     if (*total == 100) {
+        free(response);
         return;
     }
 
@@ -127,11 +130,13 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     if (strncmp(status, "401", 3) == 0) {
         // Re-fetch the page with the checker field on
         parse_page(host, path, visited, total, 1);
+        free(response);
         return;
     }
     if (strncmp(status, "503", 3) == 0 || strncmp(status, "504", 3) == 0) {
         // re-fetch the page
         parse_page(host, path, visited, total, 0);
+        free(response);
         return;
     }
     if (strncmp(status, "301", 3) == 0) {
@@ -145,6 +150,7 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
 
         struct Url info = get_info(new_url);
         parse_page(info.host, info.path, visited, total, 0);
+        free(response);
         return;
     }
 
@@ -158,9 +164,11 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
         type[9] = '\0';
 
         if (strncmp(type, "text/html", 9) != 0) {
+            free(response);
             return;
         }
     } else {
+        free(response);
         return;
     }
 
@@ -186,6 +194,7 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     actual = strlen(body);
 
     if (actual < expected) {
+        free(response);
         return;
     }
 
@@ -200,6 +209,8 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     GumboOutput *op = gumbo_parse(response);
     search_for_links(op->root, urls, &count);
     gumbo_destroy_output(&kGumboDefaultOptions, op);
+
+    free(response);
 
 
     // Checking the crawled urls
