@@ -87,7 +87,7 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
 
     char* response;
     response = (char*)malloc(MAX_BUFFER * sizeof(char));
-    if (response) {
+    if (!response) {
         fprintf(stderr, "could not allocate memory for response\n");
         exit(0);
     }
