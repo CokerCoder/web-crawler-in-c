@@ -85,7 +85,7 @@ int check_url(char* url) {
 
 // Turn every given url to absolute based on the given part
 void to_abs(char* given, char* host, char* path) {
-    char abs[1000];
+    char abs[1000] = "";
 
     // If http://, nothing to do
     if (strlen(given) > 4 && strncmp(given, "http://", 4) == 0) {
@@ -161,8 +161,9 @@ int check_visited(char* abs_url, char** total_list, int total) {
 int check_components(char* url, char* host) {
 
     struct Url info;
-    char check_comp[1000];
-    char expected_comp[1000];
+    info = (struct Url) { "", "" };
+    char check_comp[1000] = "";
+    char expected_comp[1000] = "";
 
     sscanf(url, "http://%99[^/]%s[\n]", info.host, info.path);
 

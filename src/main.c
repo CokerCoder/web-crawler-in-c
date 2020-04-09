@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "url.h"
 #include "socket.h"
@@ -20,13 +21,13 @@ int main(int argc , char *argv[])
 
     // List of urls that have been visited, 100 maximum
     char **visited;
-    visited = malloc(100 * sizeof *visited);
+    visited = calloc(100, sizeof *visited);
     if (!visited) {
         fprintf(stderr, "could not allocate memory for visited urls\n");
         exit(0);
     }
     for (int i = 0; i < 100; i++) {
-        visited[i] = malloc(1000 * sizeof *visited[i]);
+        visited[i] = calloc(1000, sizeof *visited[i]);
     }
     int total = 0;
 

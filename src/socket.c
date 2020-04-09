@@ -12,6 +12,7 @@
 #include "url.h"
 
 #define MAX_BUFFER 100000
+#define BUFFER 100
 
 
 /*
@@ -74,7 +75,7 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
         exit(0);
     }
 
-    char request[2048];
+    char request[2048] = "";
     //Send some data
     if (if_401 == 0) {
         sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\nUser-Agent: jinyj\r\nConnection: close\r\n\r\n", path, host);
@@ -86,16 +87,19 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
 
 
     char* response;
-    response = (char*)malloc(MAX_BUFFER * sizeof(char));
+    response = (char*)calloc(BUFFER, sizeof(char));
     if (!response) {
         fprintf(stderr, "could not allocate memory for response\n");
         exit(0);
     }
 
+    int total_buffer = BUFFER;
     int read = 0;
     int ptr = 0;
 
-    while ((read = recv(web_socket, &response[ptr], MAX_BUFFER, 0))) {
+    while ((read = recv(web_socket, &response[ptr], total_buffer - ptr, 0))) {
+        total_buffer += BUFFER;
+        response = (char*)realloc(response, (total_buffer+BUFFER)* sizeof(char));
         ptr += read;
         if (ptr >= MAX_BUFFER) {
             break;
@@ -106,7 +110,7 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
 
 
     // Strip the tailing '/' and save this url as visited
-    char output[1000];
+    char output[1000] = "";
     sprintf(output, "http://%s%s", host, path);
     if(output[strlen(output)-1]=='/') {
         output[strlen(output)-1] = '\0';
@@ -124,7 +128,7 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     }
 
     // Check status codes
-    char status[4];
+    char status[4] = "";
     memcpy(status, &response[9], 3 );
     status[3] = '\0';
 
@@ -149,7 +153,7 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
         char* next_url;
         next_url = strstr(response, state);
 
-        char new_url[1000];
+        char new_url[1000] = "";
         sscanf(next_url, "Location: %1000[^\n]\n", new_url);
 
         struct Url info = get_info(new_url);
@@ -163,7 +167,7 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     // return if it's not text/html as required
     char *result = strstr(response, "Content-Type");
     if (result) {
-        char type[10];
+        char type[10] = "";
         strncpy(type, result+14, 9);
         type[9] = '\0';
 
@@ -187,7 +191,7 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
     char* header;
     header = strstr(response, length);
 
-    char content_length[10];
+    char content_length[10] = "";
     if (header) {
         sscanf(header, "Content-Length: %10[^\n]\n", content_length);
     }
@@ -204,13 +208,13 @@ void parse_page(char* host, char* path, char** visited, int* total, int if_401) 
 
     // Allocate the memory spaces for the urls that this page contains
     char **urls;
-    urls = malloc(100 * sizeof *urls);
+    urls = calloc(100, sizeof *urls);
     if (!urls) {
         fprintf(stderr, "could not allocate memory for urls\n");
         exit(0);
     }
     for (int i = 0; i < 100; i++) {
-        urls[i] = malloc(1000 * sizeof *urls[i]);
+        urls[i] = calloc(1000, sizeof *urls[i]);
     }
     int count = 0;
 
